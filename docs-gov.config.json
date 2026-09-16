@@ -1,0 +1,47 @@
+{
+  "include": [
+    "README.md",
+    "AGENTS.md",
+    "docs/**/*.md"
+  ],
+  "indexes": [
+    "README.md"
+  ],
+  "tokenBudgets": {
+    "perDoc": 2600,
+    "bankSlack": 0.25,
+    "overrides": [
+      {
+        "path": "docs/ci-execution-policy.md",
+        "budget": 3300,
+        "reason": "this is the single authoritative event-to-gate contract, so the fleet's other CI docs link here rather than restating it — growth here buys deletions elsewhere. What should absorb the next breach is a split, not another raise; raised 3200 → 3300 on 2026-09-15 for the extraction into qwts-agent-ci (qwts/agent-sop#371, #372), where the links into agent-sop and qwts-agent-org became absolute URLs"
+      }
+    ],
+    "contextSets": []
+  },
+  "structure": {
+    "maxHeadingDepth": 4,
+    "summaryWithinTokens": 250,
+    "requiredFields": []
+  },
+  "antiPatterns": {
+    "positionalReferences": true,
+    "unresolvedPlaceholders": true,
+    "duplicateParagraphs": {
+      "minLength": 160,
+      "allow": []
+    },
+    "terminology": []
+  },
+  "integrity": {
+    "links": true,
+    "orphans": true,
+    "stalePaths": {
+      "roots": [
+        "docs",
+        "tools",
+        ".github"
+      ]
+    }
+  }
+}

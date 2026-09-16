@@ -1,0 +1,59 @@
+# This repository's own gate. The governed lifecycle the shipped actions
+# implement is specified in docs/ci-execution-policy.md; this workflow is the
+# minimal consumer of what it ships — the install step runs through the local
+# bounded-dependency-install action — on hosted runners, because the
+# repository is public.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # ENG-0313 fan-out backpressure: pull-request installs share one lane, so a
+    # burst of updates queues instead of racing into the package origin; push
+    # and dispatch runs take a unique per-run group so they are never
+    # superseded by pull-request traffic.
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && 'ci-install' || format('ci-install-{0}', github.run_id) }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - name: Install locked dependencies
+        uses: ./.github/actions/bounded-dependency-install
+        env:
+          NPM_CONFIG_CACHE: ${{ runner.temp }}/ci-dependency-cache/npm
+        with:
+          ecosystem: npm
+          cache-paths: ${{ runner.temp }}/ci-dependency-cache/npm
+          lockfiles: package-lock.json
+          toolchain-version: node-${{ steps.node.outputs.node-version }}
+          task: Install locked dependencies
+          executable: npm
+          arguments-json: '["ci"]'
+          timeout-seconds: '300'
+          attempts: '2'
+          retry-delay-seconds: '5'
+      - name: Unit and workflow-tooling tests
+        run: npm test
+      - name: Workflow runtime policy
+        run: npm run ci-runtime:check
+      - name: Markdown lint
+        run: npm run lint:markdown

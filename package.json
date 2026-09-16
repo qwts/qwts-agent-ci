@@ -1,0 +1,18 @@
+{
+  "name": "qwts-agent-ci",
+  "version": "1.0.0",
+  "description": "Shared CI actions and runtime-policy tooling for the qwts fleet, consumed by SHA-pinned reference",
+  "private": true,
+  "engines": {
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+  },
+  "scripts": {
+    "test": "node --test tools/ci-policy/tests/ci-policy.test.mjs tools/ci-policy/tests/governed-ci-docs.test.mjs tools/ci-policy/tests/release-lifecycle.test.mjs tools/ci-policy/tests/golden-task.test.mjs tools/ci-runtime/tests/bounded-command.test.mjs tools/ci-runtime/tests/dependency-cache.test.mjs tools/ci-runtime/tests/runtime-policy.test.mjs tools/pins/tests/pin-reachability.test.mjs",
+    "ci-runtime:check": "node tools/ci-runtime/runtime-policy.mjs",
+    "pins:check": "node tools/pins/pin-reachability.mjs",
+    "lint:markdown": "markdownlint docs/ AGENTS.md README.md"
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.49.1"
+  }
+}
