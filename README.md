@@ -10,6 +10,7 @@ Shared CI for the `qwts` fleet: the composite actions every governed repository 
 | [`bounded-command`](.github/actions/bounded-command/action.yml) | Run one explicit command with a per-attempt deadline, finite retries, and process-tree cleanup. |
 | [`bounded-dependency-install`](.github/actions/bounded-dependency-install/action.yml) | Restore a lockfile-bound download cache, run a bounded installer, and save a verified cache only from default-branch pushes. |
 | [`changeset-release-count`](.github/actions/changeset-release-count/action.yml) | Report the semantic pending-release count from `changeset status` without counting governance-only changeset files. |
+| [`cli-skill-gate`](.github/actions/cli-skill-gate/action.yml) | Fail a CLI release closed unless its agent skill's contract, the packaged executable's version, the bundled skill, and the skill's workflow tests agree ([ENG-0055](https://github.com/qwts/qwts-agent-sop/blob/main/docs/decisions/ENG-0055-every-cli-ships-its-agent-skill.md); contract in qwts-agent-sop's [CLI skill contract](https://github.com/qwts/qwts-agent-sop/blob/main/docs/reference/cli-skill-contract.md)). |
 | [`ci-runtime-check`](.github/actions/ci-runtime-check/action.yml) | Reject runner jobs without a literal timeout and raw unbounded dependency installers. |
 
 Consume an action by full commit SHA, never by tag or branch:

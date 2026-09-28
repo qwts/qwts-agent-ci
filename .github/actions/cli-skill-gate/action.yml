@@ -1,0 +1,36 @@
+name: CLI skill release gate
+description: Fail a CLI release closed unless its agent skill, bundle, and packaged executable agree (ENG-0055).
+
+inputs:
+  skill:
+    description: Source skill directory, for example skills/example-cli
+    required: true
+  executable:
+    description: Path to the packaged executable the release ships
+    required: true
+  bundle:
+    description: Path of the skill directory inside the packaged release
+    required: true
+  bundle-args-json:
+    description: JSON array of arguments to the executable that print the bundle location
+    required: true
+  test-json:
+    description: JSON array naming the workflow-test command and its arguments; it receives CLI_SKILL_GATE_EXECUTABLE
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check the CLI skill contract
+      shell: bash
+      env:
+        SKILL: ${{ inputs.skill }}
+        EXECUTABLE: ${{ inputs.executable }}
+        BUNDLE: ${{ inputs.bundle }}
+        BUNDLE_ARGS_JSON: ${{ inputs.bundle-args-json }}
+        TEST_JSON: ${{ inputs.test-json }}
+      run: |
+        set -euo pipefail
+        node "${{ github.action_path }}/cli-skill-gate.mjs" \
+          --skill "$SKILL" --executable "$EXECUTABLE" --bundle "$BUNDLE" \
+          --bundle-args-json "$BUNDLE_ARGS_JSON" --test-json "$TEST_JSON"
