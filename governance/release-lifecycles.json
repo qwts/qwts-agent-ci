@@ -162,6 +162,13 @@
       "sourceInputPolicy": "not-applicable",
       "generatedProjection": null,
       "harnessProjection": null
+    },
+    {
+      "repository": "qwts/agent-comms",
+      "metadataSystem": "none",
+      "sourceInputPolicy": "not-applicable",
+      "generatedProjection": null,
+      "harnessProjection": null
     }
   ]
 }
