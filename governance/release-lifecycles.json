@@ -169,6 +169,20 @@
       "sourceInputPolicy": "not-applicable",
       "generatedProjection": null,
       "harnessProjection": null
+    },
+    {
+      "repository": "qwts/homebrew-tap",
+      "metadataSystem": "none",
+      "sourceInputPolicy": "not-applicable",
+      "generatedProjection": null,
+      "harnessProjection": null
+    },
+    {
+      "repository": "qwts/GeniusBar",
+      "metadataSystem": "none",
+      "sourceInputPolicy": "not-applicable",
+      "generatedProjection": null,
+      "harnessProjection": null
     }
   ]
 }
