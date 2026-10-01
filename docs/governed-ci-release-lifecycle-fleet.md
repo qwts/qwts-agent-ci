@@ -39,8 +39,8 @@ generated-projection identity of each. Coverage is a contract test.
 | `moonsweeper` | None | Not applicable. |
 | `managed-machine` | Git tag via `scripts/release` | Not applicable; tags the sibling managed-machine-config checkout and pins the formula's config seed. |
 | `managed-machine-config` | Tag pushed by managed-machine `scripts/release` | Not applicable; ships as managed-machine's pinned config snapshot. |
-| `agent-comms` | None | Not applicable. Onboarding; no release mechanism yet. |
-| `homebrew-tap` | None | Not applicable. Onboarding; formula bumps follow agent-comms releases. |
+| `agent-comms` | Git tag by its Release workflow after a `scripts/release` PR merges | Not applicable; the workflow tags the merged commit once CI passes on `main`, and the in-repo formula installs from that tag. |
+| `homebrew-tap` | None | Not applicable. agent-comms ships its formula in its own repository, tapped by URL. |
 | `GeniusBar` | None | Not applicable. Onboarding; no release mechanism yet. |
 
 ## Repair handoff for a Changesets repository
