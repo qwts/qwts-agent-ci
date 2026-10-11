@@ -6,7 +6,7 @@ Shared CI for the `qwts` fleet: the composite actions every governed repository 
 
 | Action | Purpose |
 | --- | --- |
-| [`ci-policy`](.github/actions/ci-policy/action.yml) | Authorize governed runtime actors, refuse public forks and drafts, and classify the run into the `full`, `queue`, `post-merge`, or `manual` lane with its release-projection outputs. |
+| [`ci-policy`](.github/actions/ci-policy/action.yml) | Authorize governed runtime actors, admit public-fork PRs only on hosted runners without secrets, refuse drafts, and classify the run into the `full`, `queue`, `post-merge`, or `manual` lane with its release-projection outputs. |
 | [`bounded-command`](.github/actions/bounded-command/action.yml) | Run one explicit command with a per-attempt deadline, finite retries, and process-tree cleanup. |
 | [`bounded-dependency-install`](.github/actions/bounded-dependency-install/action.yml) | Restore a lockfile-bound download cache, run a bounded installer, and save a verified cache only from default-branch pushes. |
 | [`changeset-release-count`](.github/actions/changeset-release-count/action.yml) | Report the semantic pending-release count from `changeset status` without counting governance-only changeset files. |

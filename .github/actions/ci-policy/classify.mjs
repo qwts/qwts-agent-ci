@@ -151,7 +151,59 @@ export function releaseOutputs(options) {
   };
 }
 
-export function authorizeRun({ actor, triggeringActor = actor, allowedActors, eventName, event, ref }) {
+/**
+ * Whether a pull request's head lives in a fork, read from the GitHub-owned
+ * event payload. A missing head repository (a deleted fork) or a malformed
+ * payload cannot be classified, so it throws instead of passing as same-repo.
+ */
+export function pullRequestFromFork(event, repository) {
+  const head = event?.pull_request?.head?.repo;
+  if (typeof head?.fork !== 'boolean') {
+    throw new Error('pull request fork status cannot be determined');
+  }
+  if (head.fork) return true;
+  // A head outside this repository that does not call itself a fork is
+  // inconsistent evidence, never a same-repo pull request.
+  if (repository !== undefined && head.full_name !== repository) {
+    throw new Error('pull request fork status cannot be determined');
+  }
+  return false;
+}
+
+/**
+ * A fork `pull_request` run is admitted without the actor allow list only
+ * when it can hold nothing worth taking: GitHub never passes secrets, or a
+ * write token, to a fork `pull_request` run in a public repository, and this
+ * policy job itself must be on a GitHub-hosted runner, so a consumer that
+ * would route fork code to a self-hosted runner fails here first.
+ */
+export function isAdmissibleForkPullRequest({ event, runnerEnvironment }) {
+  return event?.repository?.private === false && runnerEnvironment === 'github-hosted';
+}
+
+export function authorizeRun({
+  actor,
+  triggeringActor = actor,
+  allowedActors,
+  eventName,
+  event,
+  ref,
+  repository,
+  runnerEnvironment,
+}) {
+  // pull_request_target runs with the base repository's secrets and token, so
+  // a fork never reaches it, and a head that cannot be classified is a fork.
+  if (eventName === 'pull_request_target' && pullRequestFromFork(event, repository)) {
+    throw new Error('public fork pull requests are not permitted to run pull_request_target workflows');
+  }
+  if (eventName === 'pull_request' && pullRequestFromFork(event, repository)) {
+    if (!isAdmissibleForkPullRequest({ event, runnerEnvironment })) {
+      throw new Error(
+        'fork pull requests run only in a public repository on a GitHub-hosted runner, without secrets',
+      );
+    }
+    return;
+  }
   const nativeMergeQueueMainPush = isNativeMergeQueueMainPush({
     actor,
     triggeringActor,
@@ -165,12 +217,6 @@ export function authorizeRun({ actor, triggeringActor = actor, allowedActors, ev
     if (!isAllowedActor(triggeringActor, allowedActors)) {
       throw new Error(`triggering actor ${triggeringActor || '<empty>'} is not authorized by CI policy`);
     }
-  }
-  if (eventName === 'pull_request' && event.pull_request?.head?.repo?.fork) {
-    throw new Error('public fork pull requests are not permitted to run workflows');
-  }
-  if (eventName === 'pull_request_target' && event.pull_request?.head?.repo?.fork) {
-    throw new Error('public fork pull requests are not permitted to run workflows');
   }
 }
 
@@ -217,6 +263,7 @@ async function main() {
     event,
     repository: process.env.CI_POLICY_REPOSITORY,
     ref: process.env.CI_POLICY_REF,
+    runnerEnvironment: process.env.CI_POLICY_RUNNER_ENVIRONMENT,
   };
   // Authorization-only callers gate on the actor alone; they neither read release
   // configuration nor hold `pull-requests: read`.

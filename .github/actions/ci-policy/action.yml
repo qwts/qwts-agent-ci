@@ -52,5 +52,6 @@ runs:
         CI_POLICY_API_URL: ${{ github.api_url }}
         CI_POLICY_TOKEN: ${{ github.token }}
         CI_POLICY_REF: ${{ github.ref }}
+        CI_POLICY_RUNNER_ENVIRONMENT: ${{ runner.environment }}
         CI_POLICY_AUTHORIZATION_ONLY: ${{ inputs.authorization-only }}
       run: node "${{ github.action_path }}/classify.mjs"

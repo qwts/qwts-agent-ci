@@ -116,7 +116,8 @@ or prove these settings by itself.
 - **Actions → General → Actions permissions:** selected-action restrictions and
   full-commit-SHA pinning retained.
 - **Actions → General → Fork pull request workflows:** approval required for all
-  external contributors; public-fork runs are never approved.
+  external contributors; a public-fork run is approved only after its change is
+  read, and it runs on GitHub-hosted runners without secrets.
 - **Actions → General → Workflow permissions:** read-only default token;
   **Allow GitHub Actions to create and approve pull requests** disabled unless
   a reviewed repository exception exists.
