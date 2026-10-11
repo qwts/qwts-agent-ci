@@ -52,8 +52,9 @@ the post-merge lane, and both actor fields must name that bot.
 A fork `pull_request` run skips the allow list only in a public repository
 (no secrets, read-only token) with the policy job on a GitHub-hosted runner;
 other jobs must route forks to hosted labels too. Fork `pull_request_target`,
-or unknown fork status, is refused (qwts/agent-bot-identity#752). Approve a
-fork run only after reading it, and never enqueue a fork.
+authorization-only gates, and unknown fork status refuse forks
+(qwts/agent-bot-identity#752). Approve fork runs after reading them; never
+enqueue one.
 
 ## Pull-request lifecycle
 
@@ -69,7 +70,7 @@ lane unless a separate reviewed decision explicitly removes it.
 | PR enters the merge queue | Run every complete-suite gate against the `merge_group` SHA. Earlier evidence cannot replace validation with current `main` and prior queued changes. |
 | Queue merge or push to `main` | If that exact SHA has successful merge-group evidence, run only a short smoke/integration check. Otherwise execute every complete-suite gate as the fail-safe. |
 | Manual dispatch | Used for exact-SHA preflight validation before PR promotion, diagnostics, release recovery, workflow testing, and an explicit rerun. A CI dispatch defaults to the complete suite. |
-| Public-fork PR | After approval, the complete suite on hosted runners, without secrets. Never enqueued. |
+| Public-fork PR | After approval, the complete suite on hosted runners. Never enqueued. |
 
 A ready PR always verifies remote evidence. Its stable gate either proves a
 successful manual complete-suite run for that exact head SHA or runs the suite;

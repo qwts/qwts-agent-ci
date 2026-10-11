@@ -257,7 +257,7 @@ const forkRun = (overrides = {}) => ({
 
 test('a public fork pull request on a hosted runner runs the complete suite without the allow list', () => {
   assert.equal(classify(forkRun()), 'full');
-  assert.doesNotThrow(() => authorizeRun({ allowedActors, ...forkRun() }));
+  assert.doesNotThrow(() => authorizeRun({ allowedActors, admitForkPullRequests: true, ...forkRun() }));
   // A maintainer rerun of the same fork run is admitted the same way.
   assert.equal(classify(forkRun({ triggeringActor: 'qwts' })), 'full');
   assert.throws(() => classify(forkRun({ event: forkPullRequest({ draft: true }) })), /validated locally/);
@@ -300,6 +300,21 @@ test('fork status that cannot be determined fails closed', () => {
     /cannot be determined/,
   );
   assert.equal(pullRequestFromFork(releasePullRequest(), 'qwts/overlook'), false);
+});
+
+test('authorization-only gates never admit a fork pull request', () => {
+  // Authorization-only mode protects non-CI entrypoints before checkout or
+  // credentials, so a fork is refused there even when CI would admit it.
+  for (const actor of ['octocat', 'qwts']) {
+    assert.throws(
+      () => authorizeRun({ allowedActors, ...forkRun({ actor, triggeringActor: actor }) }),
+      /not permitted to run workflows/,
+    );
+  }
+  assert.throws(
+    () => authorizeRun({ allowedActors, admitForkPullRequests: false, ...forkRun() }),
+    /not permitted to run workflows/,
+  );
 });
 
 test('pull_request_target from a fork is refused for every actor and runner', () => {

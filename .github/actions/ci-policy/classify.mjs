@@ -190,6 +190,7 @@ export function authorizeRun({
   ref,
   repository,
   runnerEnvironment,
+  admitForkPullRequests = false,
 }) {
   // pull_request_target runs with the base repository's secrets and token, so
   // a fork never reaches it, and a head that cannot be classified is a fork.
@@ -197,6 +198,11 @@ export function authorizeRun({
     throw new Error('public fork pull requests are not permitted to run pull_request_target workflows');
   }
   if (eventName === 'pull_request' && pullRequestFromFork(event, repository)) {
+    // Only CI lifecycle classification admits a fork. An authorization-only
+    // gate protects a non-CI entrypoint, so a fork never passes it.
+    if (!admitForkPullRequests) {
+      throw new Error('public fork pull requests are not permitted to run workflows');
+    }
     if (!isAdmissibleForkPullRequest({ event, runnerEnvironment })) {
       throw new Error(
         'fork pull requests run only in a public repository on a GitHub-hosted runner, without secrets',
@@ -221,7 +227,7 @@ export function authorizeRun({
 }
 
 export function classifyRun(options) {
-  authorizeRun(options);
+  authorizeRun({ ...options, admitForkPullRequests: true });
   const { eventName, event, ref } = options;
   if (eventName === 'pull_request' && event.pull_request?.draft) {
     throw new Error('draft pull requests are validated locally and do not run CI');
