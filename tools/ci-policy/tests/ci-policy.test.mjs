@@ -12,6 +12,7 @@ import {
   isAllowedActor,
   isNativeMergeQueueMainPush,
   outputsFor,
+  pullRequestFromFork,
   releaseLifecycleFor,
   releaseOutputs,
 } from '../../../.github/actions/ci-policy/classify.mjs';
@@ -234,6 +235,114 @@ test('fork PRs, unauthorized actors, and unsupported triggers fail closed', () =
     /not authorized/,
   );
   assert.throws(() => classify({ actor: 'qwts', eventName: 'schedule', event: {} }), /not a governed CI trigger/);
+});
+
+// qwts/agent-bot-identity#752: an outside contributor's fork pull request
+// runs without the actor allow list only where it can reach nothing: a public
+// repository, whose fork `pull_request` runs get no secrets and a read-only
+// token, with this policy job on a GitHub-hosted runner.
+const forkPullRequest = ({ draft = false, isPrivate = false, headRepository = 'octocat/overlook' } = {}) => ({
+  repository: { private: isPrivate },
+  pull_request: { draft, head: { repo: { fork: true, full_name: headRepository } } },
+});
+const forkRun = (overrides = {}) => ({
+  actor: 'octocat',
+  triggeringActor: 'octocat',
+  eventName: 'pull_request',
+  event: forkPullRequest(),
+  repository: 'qwts/overlook',
+  runnerEnvironment: 'github-hosted',
+  ...overrides,
+});
+
+test('a public fork pull request on a hosted runner runs the complete suite without the allow list', () => {
+  assert.equal(classify(forkRun()), 'full');
+  assert.doesNotThrow(() => authorizeRun({ allowedActors, admitForkPullRequests: true, ...forkRun() }));
+  // A maintainer rerun of the same fork run is admitted the same way.
+  assert.equal(classify(forkRun({ triggeringActor: 'qwts' })), 'full');
+  assert.throws(() => classify(forkRun({ event: forkPullRequest({ draft: true }) })), /validated locally/);
+});
+
+test('a fork pull request that could reach a self-hosted runner or secrets is refused', () => {
+  for (const overrides of [
+    { runnerEnvironment: 'self-hosted' },
+    { runnerEnvironment: undefined },
+    { runnerEnvironment: '' },
+    { event: forkPullRequest({ isPrivate: true }) },
+    { event: { ...forkPullRequest(), repository: {} } },
+    { event: { pull_request: forkPullRequest().pull_request } },
+  ]) {
+    assert.throws(() => classify(forkRun(overrides)), /fork pull requests run only in a public repository/, JSON.stringify(overrides));
+  }
+});
+
+test('fork status that cannot be determined fails closed', () => {
+  for (const pull_request of [
+    { draft: false, head: { repo: null } },
+    { draft: false, head: {} },
+    { draft: false, head: { repo: { full_name: 'octocat/overlook' } } },
+    { draft: false, head: { repo: { fork: 'false', full_name: 'qwts/overlook' } } },
+  ]) {
+    const event = { repository: { private: false }, pull_request };
+    assert.throws(() => pullRequestFromFork(event, 'qwts/overlook'), /cannot be determined/);
+    for (const eventName of ['pull_request', 'pull_request_target']) {
+      assert.throws(
+        () => classify({ actor: 'qwts', eventName, event, repository: 'qwts/overlook', runnerEnvironment: 'github-hosted' }),
+        /cannot be determined/,
+      );
+    }
+  }
+  // A head in another repository that does not call itself a fork is not same-repo.
+  const crossRepository = { pull_request: { draft: false, head: { repo: { fork: false, full_name: 'octocat/overlook' } } } };
+  assert.throws(() => pullRequestFromFork(crossRepository, 'qwts/overlook'), /cannot be determined/);
+  assert.throws(
+    () => classify({ actor: 'qwts', eventName: 'pull_request', event: crossRepository, repository: 'qwts/overlook' }),
+    /cannot be determined/,
+  );
+  assert.equal(pullRequestFromFork(releasePullRequest(), 'qwts/overlook'), false);
+});
+
+test('authorization-only gates never admit a fork pull request', () => {
+  // Authorization-only mode protects non-CI entrypoints before checkout or
+  // credentials, so a fork is refused there even when CI would admit it.
+  for (const actor of ['octocat', 'qwts']) {
+    assert.throws(
+      () => authorizeRun({ allowedActors, ...forkRun({ actor, triggeringActor: actor }) }),
+      /not permitted to run workflows/,
+    );
+  }
+  assert.throws(
+    () => authorizeRun({ allowedActors, admitForkPullRequests: false, ...forkRun() }),
+    /not permitted to run workflows/,
+  );
+});
+
+test('pull_request_target from a fork is refused for every actor and runner', () => {
+  for (const actor of ['qwts', 'octocat']) {
+    assert.throws(
+      () => authorizeRun({ allowedActors, ...forkRun({ actor, triggeringActor: actor, eventName: 'pull_request_target' }) }),
+      /pull_request_target/,
+    );
+  }
+});
+
+test('same-repository pull requests keep the actor allow list', () => {
+  const sameRepository = releasePullRequest();
+  assert.equal(
+    classify({ actor: 'qwts', eventName: 'pull_request', event: sameRepository, repository: 'qwts/overlook' }),
+    'full',
+  );
+  assert.throws(
+    () => classify({
+      actor: 'octocat',
+      triggeringActor: 'octocat',
+      eventName: 'pull_request',
+      event: { ...sameRepository, repository: { private: false } },
+      repository: 'qwts/overlook',
+      runnerEnvironment: 'github-hosted',
+    }),
+    /actor octocat is not authorized/,
+  );
 });
 
 const overlook = releaseLifecycleFor(releaseCatalog, 'qwts/overlook');

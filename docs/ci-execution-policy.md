@@ -2,7 +2,8 @@
 
 Every governed repository keeps its agreed validations: agents check drafts
 locally, ready PRs prove their head, the queue validates the exact candidate,
-and `main` reuses queue evidence. Public-fork workflows never run.
+and `main` reuses queue evidence. Public-fork pull requests run only on
+GitHub-hosted runners, without secrets.
 
 This baseline comes from
 [ENG-0004](https://github.com/qwts/agent-sop/blob/main/docs/decisions/ENG-0004-centralize-shared-cicd.md) and inherited under
@@ -26,7 +27,8 @@ Allowed runtime actors are:
 
 The immutable action checks both actor fields and rejects `github-actions[bot]`,
 GitHub's own `Copilot` actor, external contributors, third parties, and retired
-or unregistered Apps. Our `qwts-copilot-agent` App is a roster identity like any
+or unregistered Apps, except a [fork pull request](#fork-pull-requests). Our
+`qwts-copilot-agent` App is a roster identity like any
 other and is not what this line excludes — the boundary is drawn at Apps we own
 and register, not at the harness a change was authored in. Later automation
 authenticates as an allowed App. GitHub documents its separate preview control in
@@ -45,11 +47,14 @@ The merge-queue bot remains unauthorized for `merge_group`, manual dispatch,
 PR, and non-`main` push events. Only the resulting native queue push may reach
 the post-merge lane, and both actor fields must name that bot.
 
-For public repositories, do not approve a fork workflow after GitHub queues it.
-Require approval for all external contributors, keep the default workflow token
-read-only, and let the immutable action refuse the external actor if a run is
-started. Maintainers move an accepted change onto an allowed,
-repository-owned branch before validation.
+### Fork pull requests
+
+A fork `pull_request` run skips the allow list only in a public repository
+(no secrets, read-only token) with the policy job on a GitHub-hosted runner;
+other jobs must route forks to hosted labels too. Fork `pull_request_target`,
+authorization-only gates, and unknown fork status refuse forks
+(qwts/agent-bot-identity#752). Approve fork runs after reading them; never
+enqueue one.
 
 ## Pull-request lifecycle
 
@@ -65,7 +70,7 @@ lane unless a separate reviewed decision explicitly removes it.
 | PR enters the merge queue | Run every complete-suite gate against the `merge_group` SHA. Earlier evidence cannot replace validation with current `main` and prior queued changes. |
 | Queue merge or push to `main` | If that exact SHA has successful merge-group evidence, run only a short smoke/integration check. Otherwise execute every complete-suite gate as the fail-safe. |
 | Manual dispatch | Used for exact-SHA preflight validation before PR promotion, diagnostics, release recovery, workflow testing, and an explicit rerun. A CI dispatch defaults to the complete suite. |
-| Public-fork PR | Do not run or approve workflows. |
+| Public-fork PR | After approval, the complete suite on hosted runners. Never enqueued. |
 
 A ready PR always verifies remote evidence. Its stable gate either proves a
 successful manual complete-suite run for that exact head SHA or runs the suite;
@@ -146,7 +151,7 @@ Missing or ambiguous provenance and any product, Changeset, or unmanaged path
 retain source policy, including after a Version PR and harness rebase.
 
 Branch names, PR inputs, or bot authorship alone grant nothing. Ordinary
-automation, including Dependabot, keeps source policy; public forks are refused;
+automation, including Dependabot, keeps source policy; forks run hosted only;
 authorization checks both `github.actor` and `github.triggering_actor`.
 
 The pull request a run belongs to is resolved from GitHub-owned evidence under
@@ -198,8 +203,8 @@ packaging as a substitute for the merge gate.
   protected default branches.
 - Keep workflow-execution protections disabled until GitHub can represent the
   required system actors without authorizing a broad repository role.
-- Require approval for all external-contributor workflows and never approve a
-  public-fork workflow.
+- Require approval for all external-contributor workflows, and approve a
+  public-fork workflow only after reading its change.
 - Keep the default workflow token read-only and retain the action-source allow
   list plus full-commit-SHA pinning.
 - Require the exact merge candidate to pass every complete-suite gate.
