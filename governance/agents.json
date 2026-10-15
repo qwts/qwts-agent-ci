@@ -128,6 +128,18 @@
       "note": "Aider terminal coding harness."
     },
     {
+      "slug": "qwts-vibe-agent",
+      "harness": "vibe",
+      "status": "active",
+      "note": "Mistral Vibe CLI coding agent harness."
+    },
+    {
+      "slug": "qwts-mirror-agent",
+      "harness": "mirror",
+      "status": "active",
+      "note": "Reflection Mirror agent harness."
+    },
+    {
       "slug": "qwts-claude-fable-agent",
       "harness": "claude-code",
       "status": "retired",
