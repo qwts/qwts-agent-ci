@@ -76,6 +76,8 @@ test('the human, named automation, and active roster Apps are authorized', () =>
     'dependabot[bot]',
     'qwts-codex-agent[bot]',
     'qwts-goose-agent[bot]',
+    'qwts-vibe-agent[bot]',
+    'qwts-mirror-agent[bot]',
   ]) {
     assert.equal(isAllowedActor(actor, allowedActors), true, actor);
   }
