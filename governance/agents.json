@@ -140,6 +140,36 @@
       "note": "Reflection Mirror agent harness."
     },
     {
+      "slug": "qwts-junie-agent",
+      "harness": "junie",
+      "status": "active",
+      "note": "JetBrains Junie standalone coding agent harness (CLI and IDE integration)."
+    },
+    {
+      "slug": "qwts-commandcode-agent",
+      "harness": "command-code",
+      "status": "active",
+      "note": "Command Code coding agent harness (CLI and desktop app)."
+    },
+    {
+      "slug": "qwts-mcode-agent",
+      "harness": "mcode",
+      "status": "active",
+      "note": "MiniMax Code CLI coding agent harness."
+    },
+    {
+      "slug": "qwts-kilocode-agent",
+      "harness": "kilocode",
+      "status": "active",
+      "note": "Kilo Code coding agent harness."
+    },
+    {
+      "slug": "qwts-roocode-agent",
+      "harness": "roocode",
+      "status": "active",
+      "note": "Roo Code coding agent harness."
+    },
+    {
       "slug": "qwts-claude-fable-agent",
       "harness": "claude-code",
       "status": "retired",
@@ -186,6 +216,12 @@
       "harness": "vscode",
       "status": "retired",
       "note": "Retired 2026-09-01 with the move to harness-level identity (ENG-0339)."
+    },
+    {
+      "slug": "trueline-mcode-agent",
+      "harness": "mcode",
+      "status": "active",
+      "note": "MiniMax Code CLI coding agent harness for the true-line organization."
     }
   ]
 }
