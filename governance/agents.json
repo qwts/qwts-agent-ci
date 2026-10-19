@@ -222,6 +222,30 @@
       "harness": "mcode",
       "status": "active",
       "note": "MiniMax Code CLI coding agent harness for the true-line organization."
+    },
+    {
+      "slug": "trueline-claude-agent",
+      "harness": "claude-code",
+      "status": "active",
+      "note": "Claude Code agent harness for the true-line organization."
+    },
+    {
+      "slug": "trueline-codex-agent",
+      "harness": "codex",
+      "status": "active",
+      "note": "Codex agent harness for the true-line organization."
+    },
+    {
+      "slug": "trueline-grok-agent",
+      "harness": "grok",
+      "status": "active",
+      "note": "Grok Build (xAI) agent harness for the true-line organization."
+    },
+    {
+      "slug": "trueline-muse-agent",
+      "harness": "muse",
+      "status": "active",
+      "note": "Meta Muse agent harness for the true-line organization."
     }
   ]
 }
