@@ -55,7 +55,10 @@ test('every release lifecycle catalog entry is unique, complete, and published',
   const fleet = read('docs/governed-ci-release-lifecycle-fleet.md');
 
   for (const entry of catalog.repositories) {
-    const name = entry.repository.replace(/^qwts\//u, '');
+    // The handoff table names repositories by their bare name, so strip
+    // whichever account currently hosts them: a repository transferred to the
+    // true-line organization keeps its name and changes only its owner.
+    const name = entry.repository.replace(/^(?:qwts|true-line)\//u, '');
     const entries = catalog.repositories.filter((candidate) => candidate.repository === entry.repository);
     assert.equal(entries.length, 1, `${name} must appear in the catalog exactly once`);
     const { metadataSystem, generatedProjection, harnessProjection } = entry;

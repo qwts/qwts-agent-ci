@@ -54,7 +54,7 @@ const releasePullRequest = ({
   author = 'qwts',
   baseRef = 'main',
   headRef = 'codex/feature',
-  headRepository = 'qwts/overlook',
+  headRepository = 'true-line/overlook',
   fork = false,
   number = 27,
   body = '',
@@ -252,7 +252,7 @@ const forkRun = (overrides = {}) => ({
   triggeringActor: 'octocat',
   eventName: 'pull_request',
   event: forkPullRequest(),
-  repository: 'qwts/overlook',
+  repository: 'true-line/overlook',
   runnerEnvironment: 'github-hosted',
   ...overrides,
 });
@@ -283,25 +283,25 @@ test('fork status that cannot be determined fails closed', () => {
     { draft: false, head: { repo: null } },
     { draft: false, head: {} },
     { draft: false, head: { repo: { full_name: 'octocat/overlook' } } },
-    { draft: false, head: { repo: { fork: 'false', full_name: 'qwts/overlook' } } },
+    { draft: false, head: { repo: { fork: 'false', full_name: 'true-line/overlook' } } },
   ]) {
     const event = { repository: { private: false }, pull_request };
-    assert.throws(() => pullRequestFromFork(event, 'qwts/overlook'), /cannot be determined/);
+    assert.throws(() => pullRequestFromFork(event, 'true-line/overlook'), /cannot be determined/);
     for (const eventName of ['pull_request', 'pull_request_target']) {
       assert.throws(
-        () => classify({ actor: 'qwts', eventName, event, repository: 'qwts/overlook', runnerEnvironment: 'github-hosted' }),
+        () => classify({ actor: 'qwts', eventName, event, repository: 'true-line/overlook', runnerEnvironment: 'github-hosted' }),
         /cannot be determined/,
       );
     }
   }
   // A head in another repository that does not call itself a fork is not same-repo.
   const crossRepository = { pull_request: { draft: false, head: { repo: { fork: false, full_name: 'octocat/overlook' } } } };
-  assert.throws(() => pullRequestFromFork(crossRepository, 'qwts/overlook'), /cannot be determined/);
+  assert.throws(() => pullRequestFromFork(crossRepository, 'true-line/overlook'), /cannot be determined/);
   assert.throws(
-    () => classify({ actor: 'qwts', eventName: 'pull_request', event: crossRepository, repository: 'qwts/overlook' }),
+    () => classify({ actor: 'qwts', eventName: 'pull_request', event: crossRepository, repository: 'true-line/overlook' }),
     /cannot be determined/,
   );
-  assert.equal(pullRequestFromFork(releasePullRequest(), 'qwts/overlook'), false);
+  assert.equal(pullRequestFromFork(releasePullRequest(), 'true-line/overlook'), false);
 });
 
 test('authorization-only gates never admit a fork pull request', () => {
@@ -331,7 +331,7 @@ test('pull_request_target from a fork is refused for every actor and runner', ()
 test('same-repository pull requests keep the actor allow list', () => {
   const sameRepository = releasePullRequest();
   assert.equal(
-    classify({ actor: 'qwts', eventName: 'pull_request', event: sameRepository, repository: 'qwts/overlook' }),
+    classify({ actor: 'qwts', eventName: 'pull_request', event: sameRepository, repository: 'true-line/overlook' }),
     'full',
   );
   assert.throws(
@@ -340,14 +340,14 @@ test('same-repository pull requests keep the actor allow list', () => {
       triggeringActor: 'octocat',
       eventName: 'pull_request',
       event: { ...sameRepository, repository: { private: false } },
-      repository: 'qwts/overlook',
+      repository: 'true-line/overlook',
       runnerEnvironment: 'github-hosted',
     }),
     /actor octocat is not authorized/,
   );
 });
 
-const overlook = releaseLifecycleFor(releaseCatalog, 'qwts/overlook');
+const overlook = releaseLifecycleFor(releaseCatalog, 'true-line/overlook');
 const projection = releasePullRequest({
   author: 'chores-dumb[bot]',
   headRef: 'changeset-release/main',
@@ -355,7 +355,7 @@ const projection = releasePullRequest({
 const source = releasePullRequest({ headRef: 'codex/source-change' }).pull_request;
 const releaseRun = (overrides) => ({
   eventName: 'pull_request',
-  repository: 'qwts/overlook',
+  repository: 'true-line/overlook',
   lifecycle: overlook,
   event: {},
   pullRequests: [],
@@ -405,7 +405,7 @@ const harnessPullRequest = (overrides = {}) => releasePullRequest({
 }).pull_request;
 
 test('pure governed harness projections bypass release input across the Changesets fleet', () => {
-  for (const repository of ['qwts/overlook', 'qwts/image-trail', 'qwts/cartograph', 'qwts/bookmarkit']) {
+  for (const repository of ['true-line/overlook', 'true-line/image-trail', 'true-line/cartograph', 'true-line/bookmarkit']) {
     const lifecycle = releaseLifecycleFor(releaseCatalog, repository);
     assert.deepEqual(lifecycle.harnessProjection, {
       baseRef: 'main',
@@ -491,8 +491,8 @@ test('harness changed-file evidence comes from the complete GitHub pull-request 
   }));
   assert.deepEqual(changedFiles, [...firstPage, ...managedHarnessFiles]);
   assert.deepEqual(requested, [
-    'https://github.example/api/v3/repos/qwts/overlook/pulls/27/files?per_page=100&page=1',
-    'https://github.example/api/v3/repos/qwts/overlook/pulls/27/files?per_page=100&page=2',
+    'https://github.example/api/v3/repos/true-line/overlook/pulls/27/files?per_page=100&page=1',
+    'https://github.example/api/v3/repos/true-line/overlook/pulls/27/files?per_page=100&page=2',
   ]);
 });
 
@@ -547,7 +547,7 @@ test('the merge queue classifies its own head pull request, not the entries behi
     },
   });
   const pullRequests = await resolveReleaseOrigins(options);
-  assert.deepEqual(requested, ['https://api.github.example/repos/qwts/overlook/pulls/116']);
+  assert.deepEqual(requested, ['https://api.github.example/repos/true-line/overlook/pulls/116']);
   assert.deepEqual(pullRequests, [source]);
   // A generated projection queued ahead of this source PR is never fetched, so it cannot
   // weaken the head PR's source policy.
@@ -567,7 +567,7 @@ test('release-origin lookups preserve the GitHub Enterprise API base path', asyn
     return { ok: true, json: async () => json };
   };
   const options = {
-    repository: 'qwts/overlook',
+    repository: 'true-line/overlook',
     apiUrl: 'https://github.example/api/v3',
     token: 'test-token',
     fetchImpl,
@@ -578,9 +578,9 @@ test('release-origin lookups preserve the GitHub Enterprise API base path', asyn
   await listPullRequestFiles({ ...options, number: 27 });
 
   assert.deepEqual(requested, [
-    'https://github.example/api/v3/repos/qwts/overlook/pulls/116',
-    `https://github.example/api/v3/repos/qwts/overlook/commits/${sha}/pulls?per_page=100`,
-    'https://github.example/api/v3/repos/qwts/overlook/pulls/27/files?per_page=100&page=1',
+    'https://github.example/api/v3/repos/true-line/overlook/pulls/116',
+    `https://github.example/api/v3/repos/true-line/overlook/commits/${sha}/pulls?per_page=100`,
+    'https://github.example/api/v3/repos/true-line/overlook/pulls/27/files?per_page=100&page=1',
   ]);
 });
 
@@ -617,7 +617,7 @@ test('manual and post-merge lanes classify the exact commit through its associat
 
 test('release-origin lookups fail closed on missing or malformed evidence', async () => {
   const base = {
-    repository: 'qwts/overlook',
+    repository: 'true-line/overlook',
     sha: 'b'.repeat(40),
     apiUrl: 'https://api.github.example',
     token: 'test-token',
@@ -678,7 +678,7 @@ test('release-origin lookups fail closed on missing or malformed evidence', asyn
 
 test('the release lifecycle catalog is uniquely configured per governed repository', () => {
   assert.throws(() => releaseLifecycleFor(releaseCatalog, 'qwts/unlisted'), /not uniquely configured/);
-  assert.throws(() => releaseLifecycleFor({ schemaVersion: 2, repositories: [] }, 'qwts/overlook'), /malformed/);
+  assert.throws(() => releaseLifecycleFor({ schemaVersion: 2, repositories: [] }, 'true-line/overlook'), /malformed/);
 });
 
 test('unauthorized bots and forks cannot claim the generated projection path', () => {

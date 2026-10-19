@@ -16,7 +16,7 @@
       "harnessProjection": null
     },
     {
-      "repository": "qwts/overlook",
+      "repository": "true-line/overlook",
       "metadataSystem": "changesets",
       "sourceInputPolicy": "behavior-change-changeset-or-reviewed-rationale",
       "generatedProjection": {
@@ -32,7 +32,7 @@
       }
     },
     {
-      "repository": "qwts/image-trail",
+      "repository": "true-line/image-trail",
       "metadataSystem": "changesets",
       "sourceInputPolicy": "product-source-changeset-or-no-version-impact",
       "generatedProjection": {
@@ -48,7 +48,7 @@
       }
     },
     {
-      "repository": "qwts/cartograph",
+      "repository": "true-line/cartograph",
       "metadataSystem": "changesets",
       "sourceInputPolicy": "shipped-change-changeset",
       "generatedProjection": {
@@ -64,7 +64,7 @@
       }
     },
     {
-      "repository": "qwts/bookmarkit",
+      "repository": "true-line/bookmarkit",
       "metadataSystem": "changesets",
       "sourceInputPolicy": "user-visible-change-changeset",
       "generatedProjection": {
@@ -80,7 +80,7 @@
       }
     },
     {
-      "repository": "qwts/quorum",
+      "repository": "true-line/quorum",
       "metadataSystem": "none",
       "sourceInputPolicy": "not-applicable",
       "generatedProjection": null,
@@ -94,7 +94,7 @@
       "harnessProjection": null
     },
     {
-      "repository": "qwts/codex-rules-editor",
+      "repository": "true-line/codex-rules-editor",
       "metadataSystem": "none",
       "sourceInputPolicy": "not-applicable",
       "generatedProjection": null,
@@ -108,14 +108,14 @@
       "harnessProjection": null
     },
     {
-      "repository": "qwts/agentic-code-analysis",
+      "repository": "true-line/agentic-code-analysis",
       "metadataSystem": "none",
       "sourceInputPolicy": "not-applicable",
       "generatedProjection": null,
       "harnessProjection": null
     },
     {
-      "repository": "qwts/localnotes",
+      "repository": "true-line/localnotes",
       "metadataSystem": "none",
       "sourceInputPolicy": "not-applicable",
       "generatedProjection": null,
@@ -129,7 +129,7 @@
       "harnessProjection": null
     },
     {
-      "repository": "qwts/diagram-dreamer",
+      "repository": "true-line/diagram-dreamer",
       "metadataSystem": "none",
       "sourceInputPolicy": "not-applicable",
       "generatedProjection": null,
