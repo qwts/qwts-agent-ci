@@ -170,6 +170,12 @@
       "note": "Roo Code coding agent harness."
     },
     {
+      "slug": "qwts-kimicode-agent",
+      "harness": "kimicode",
+      "status": "active",
+      "note": "Kimi Code coding agent harness."
+    },
+    {
       "slug": "qwts-claude-fable-agent",
       "harness": "claude-code",
       "status": "retired",
@@ -246,6 +252,12 @@
       "harness": "muse",
       "status": "active",
       "note": "Meta Muse agent harness for the true-line organization."
+    },
+    {
+      "slug": "trueline-kimicode-agent",
+      "harness": "kimicode",
+      "status": "active",
+      "note": "Kimi Code coding agent harness for the true-line organization."
     }
   ]
 }
