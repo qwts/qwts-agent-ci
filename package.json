@@ -13,6 +13,6 @@
     "lint:markdown": "markdownlint docs/ AGENTS.md README.md"
   },
   "devDependencies": {
-    "markdownlint-cli": "^0.49.1"
+    "markdownlint-cli": "^0.50.0"
   }
 }
