@@ -74,10 +74,14 @@ test('the human, named automation, and active roster Apps are authorized', () =>
     'qwts',
     'chores-dumb[bot]',
     'dependabot[bot]',
-    'qwts-codex-agent[bot]',
-    'qwts-goose-agent[bot]',
-    'qwts-vibe-agent[bot]',
-    'qwts-mirror-agent[bot]',
+    'trueline-codex-agent[bot]',
+    'trueline-cursor-agent[bot]',
+    'trueline-devin-agent[bot]',
+    'trueline-goose-agent[bot]',
+    'trueline-vibe-agent[bot]',
+    'trueline-mirror-agent[bot]',
+    'qwts-warp-agent[bot]',
+    'qwts-zcode-agent[bot]',
   ]) {
     assert.equal(isAllowedActor(actor, allowedActors), true, actor);
   }
@@ -194,7 +198,7 @@ test('merge queue candidates for main select a fresh complete-suite run', () => 
     },
   };
   assert.equal(classify({ actor: 'qwts', eventName: 'merge_group', event }), 'queue');
-  assert.equal(classify({ actor: 'qwts-codex-agent[bot]', eventName: 'merge_group', event }), 'queue');
+  assert.equal(classify({ actor: 'trueline-codex-agent[bot]', eventName: 'merge_group', event }), 'queue');
   assert.equal(outputsFor('queue').run_full, 'true');
   assert.throws(
     () => classify({ actor: 'github-merge-queue[bot]', eventName: 'merge_group', event }),
