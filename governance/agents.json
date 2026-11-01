@@ -402,6 +402,12 @@
       "harness": "zcode",
       "status": "active",
       "note": "Z.AI ZCode agent harness (public true-line App)."
+    },
+    {
+      "slug": "trueline-opencode-agent",
+      "harness": "opencode",
+      "status": "active",
+      "note": "OpenCode model-independent coding agent harness (public true-line App)."
     }
   ]
 }
