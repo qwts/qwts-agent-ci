@@ -80,8 +80,9 @@ test('the human, named automation, and active roster Apps are authorized', () =>
     'trueline-goose-agent[bot]',
     'trueline-vibe-agent[bot]',
     'trueline-mirror-agent[bot]',
-    'qwts-warp-agent[bot]',
-    'qwts-zcode-agent[bot]',
+    'trueline-warp-agent[bot]',
+    'trueline-zcode-agent[bot]',
+    'trueline-opencode-agent[bot]',
   ]) {
     assert.equal(isAllowedActor(actor, allowedActors), true, actor);
   }
@@ -94,6 +95,8 @@ test('GitHub, third-party, and unregistered namespace actors are rejected', () =
     'copilot-swe-agent[bot]',
     'renovate[bot]',
     'qwts-unregistered-agent[bot]',
+    'qwts-warp-agent[bot]',
+    'qwts-zcode-agent[bot]',
     'octocat',
   ]) {
     assert.equal(isAllowedActor(actor, allowedActors), false, actor);
@@ -105,6 +108,9 @@ test('retired roster Apps are rejected', () => {
     agents: [...roster.agents, { slug: 'qwts-retired-agent', status: 'retired' }],
   };
   assert.equal(isAllowedActor('qwts-retired-agent[bot]', allowedActorsFromRoster(retiredRoster)), false);
+  for (const agent of roster.agents.filter((entry) => entry.status === 'retired')) {
+    assert.equal(isAllowedActor(`${agent.slug}[bot]`, allowedActors), false, agent.slug);
+  }
 });
 
 test('draft PRs are refused and ready lifecycle events select complete validation', () => {
