@@ -356,6 +356,24 @@
       "note": "Kilo Code coding agent harness (public true-line App)."
     },
     {
+      "slug": "trueline-kilocode-agent",
+      "harness": "kilo-code",
+      "status": "active",
+      "note": "Kilo Code coding agent harness (public true-line App)."
+    },
+    {
+      "slug": "trueline-kimicode-agent",
+      "harness": "kimicode",
+      "status": "active",
+      "note": "Kilo Code coding agent harness (public true-line App)."
+    },
+    {
+      "slug": "trueline-kimicode-agent",
+      "harness": "kimi-code",
+      "status": "active",
+      "note": "Kilo Code coding agent harness (public true-line App)."
+    },
+    {
       "slug": "trueline-kiro-agent",
       "harness": "kiro",
       "status": "active",
@@ -372,6 +390,12 @@
       "harness": "pi",
       "status": "active",
       "note": "Pi terminal coding agent harness (public true-line App)."
+    },
+    {
+      "slug": "trueline-qwen-agent",
+      "harness": "qwencode",
+      "status": "active",
+      "note": "Qwen Code agent harness (public true-line App)."
     },
     {
       "slug": "trueline-qwen-agent",
